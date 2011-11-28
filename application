@@ -5,9 +5,9 @@ callbackandroid_path="/usr/local/callbackandroid/"
 
 # defaults
 create=off
-build=on
-deploy=on
-run=on
+build=off
+deploy=off
+run=off
 target=""
 
 # options
