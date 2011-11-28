@@ -13,13 +13,13 @@ Options:
   -c default: Off
   Create application
 
-  -b default: On
+  -b default: Off
   Build application
 
-  -d default: On
+  -d default: Off
   Deploy application
 
-  -r default: On
+  -r default: Off
   Run application
   
 Usage:
