@@ -135,14 +135,14 @@ function create
   PACKAGE_NAME=com.phonegap.$(echo $ACTIVITY_NAME | tr '[A-Z]' '[a-z]')
 
   if [[ !(-d $callbackandroid_path) ]]; then 
-    echo "Error: folder callback doesn't exist"
+    echo "Error: folder $callbackandroid_path doesn't exist"
     exit  
   fi
 
   cd $callbackandroid_path
   ./bin/create $FOLDER/android $PACKAGE_NAME $ACTIVITY_NAME
-
   echo "android phonegap application created"  
+  cd -
 }
 
 function build
