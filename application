@@ -1,0 +1,169 @@
+#! /bin/sh
+
+# defaults
+create=off
+build=on
+deploy=on
+run=on
+target=""
+
+# options
+while getopts ":p:t:cbdr" opt; do
+  case $opt in
+    p) 
+      echo cd $OPTARG
+      cd $OPTARG
+      ;;
+    t) 
+      echo target=$OPTARG
+      target=$OPTARG
+      ;;      
+    c) create=on;;
+    b) build=on;;    
+    d) deploy=on;;
+    r) run=on;;
+    \?)
+      echo "Error: invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Error: option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac  
+done
+
+
+# level to high
+if [ ${PWD##*/} = "android" ]; then
+  echo "going to parent directory"
+  cd ..
+fi
+
+FOLDER=${PWD}
+
+if [ "$create" = "on" ]; then
+  echo "\n--- CREATE ---/n"
+
+  # if folder not empty, trow error
+  if [[ !(-z $(ls android/)) ]]; then
+      echo "Error: folder android must be empty"
+      exit
+  fi    
+
+  ACTIVITY_NAME=${PWD##*/}
+  PACKAGE_NAME=com.phonegap.$(echo $ACTIVITY_NAME | tr '[A-Z]' '[a-z]')
+
+  cd /usr/local/callbackandroid/
+  ./bin/create $FOLDER/android $PACKAGE_NAME $ACTIVITY_NAME
+
+  echo "android phonegap application created"
+fi
+
+if [ "$build" = "on" ]; then
+  echo "\n--- BUILD ---\n"
+
+  # folder android
+  if [[ !(-d android/) ]]; then 
+    echo "Error: folder android doesn't exist"
+    exit    
+  elif [[ (-z $(ls android/)) ]]; then  
+    echo "Error: folder android is empty"
+    exit          
+  fi
+
+  # delete wwww
+  rm -rf android/assets/www/
+  # create www
+  mkdir android/assets/www/
+  # copy all files in android/assets/www
+  cp -r www/* android/assets/www/
+
+  echo cd android
+  cd android
+
+  echo "compiling..."
+  ant debug
+fi
+
+if [ "$deploy" = "on" ]; then
+  echo "\n--- DEPLOY ---\n"
+
+  # List of devices attached HT94SKF06374 device
+  if [ "$(adb devices)" = "List of devices attached " ]; then
+    
+    echo "No device found, trying to restart adb server..."
+
+    # restart brige
+    adb kill-server
+    adb start-server
+
+    # still no devices
+    if [ "$(adb devices)" = "List of devices attached " ]; then
+      echo "Error: can't find any device"
+      exit    
+    fi
+  fi        
+
+  echo "getting config file..."
+  # get phonegap config file
+  . ./.phonegap/config
+
+  echo "installing bin/$ACTIVITY-debug.apk..."
+  if [[ !("$target" = "") && !("$target" = "device") && !("$target" = "emulator") ]]; then
+    echo "installing on $target..."
+    adb -s $target install -r bin/$ACTIVITY-debug.apk
+  elif [[ ("$target" = "device") ]]; then
+    echo "installing on device..."
+    adb -d install -r bin/$ACTIVITY-debug.apk      
+  elif [[ ("$target" = "emulator") ]]; then
+    echo "installing on emulator..."
+    adb -e install -r bin/$ACTIVITY-debug.apk  
+  else
+    adb install -r bin/$ACTIVITY-debug.apk
+  fi         
+
+fi
+
+if [ "$run" = "on" ]; then
+  echo "\n--- RUN ---\n"
+
+  # build on specific tqrget
+  echo "installing bin/$ACTIVITY-debug.apk..."
+  if [[ !("$target" = "") && !("$target" = "device") && !("$target" = "emulator") ]]; then
+    echo "starting $PACKAGE/$PACKAGE.$ACTIVITY on $target..."
+    adb -s $target shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY
+
+    echo "logcat PhoneGapLog"
+    # just show phonegap log with the time
+    adb -s $target logcat -v time PhoneGapLog:V *:S
+
+  # build on the first device  
+  elif [[ ("$target" = "device") ]]; then
+    echo "starting $PACKAGE/$PACKAGE.$ACTIVITY on device..."
+    adb -d shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY
+
+    echo "logcat PhoneGapLog"
+    # just show phonegap log with the time
+    adb -d logcat -v time PhoneGapLog:V *:S
+
+  # build on emulator  
+  elif [[ ("$target" = "emulator") ]]; then
+    echo "starting $PACKAGE/$PACKAGE.$ACTIVITY on emulator..."
+    adb -e shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY
+
+    echo "logcat PhoneGapLog"
+    # just show phonegap log with the time
+    adb -e logcat -v time PhoneGapLog:V *:S
+
+  # build on something  
+  else
+    echo "starting $PACKAGE/$PACKAGE.$ACTIVITY..."
+    adb shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY
+
+    echo "logcat PhoneGapLog"
+    # just show phonegap log with the time
+    adb logcat -v time PhoneGapLog:V *:S
+  fi     
+
+fi

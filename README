@@ -1,0 +1,33 @@
+Dependencies:
+  Android Tools
+  Apache Ant
+  CallbackAndroid
+
+Options:
+  -p default: null
+  Project path
+
+  -t default: null
+  Target 
+
+  -c default: Off
+  Create application
+
+  -b default: On
+  Build application
+
+  -d default: On
+  Deploy application
+
+  -r default: On
+  Run application
+  
+Usage:
+  Create application
+  pgt -c
+  
+  Build, install application
+  pgt -bdr 
+
+  Run application on myemulator
+  pgt -r -t "myemulator" -p "my/project/path/"
