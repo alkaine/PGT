@@ -1,5 +1,8 @@
 #! /bin/sh
 
+# config
+callbackandroid_path="/usr/local/callbackandroid/"
+
 # defaults
 create=off
 build=on
@@ -11,6 +14,10 @@ target=""
 while getopts ":p:t:cbdr" opt; do
   case $opt in
     p) 
+      if [[ !(-d $OPTARG) ]]; then 
+        echo "Error: application folder $OPTARG doesn't exist"
+        exit  
+      fi    
       echo cd $OPTARG
       cd $OPTARG
       ;;
@@ -54,7 +61,12 @@ if [ "$create" = "on" ]; then
   ACTIVITY_NAME=${PWD##*/}
   PACKAGE_NAME=com.phonegap.$(echo $ACTIVITY_NAME | tr '[A-Z]' '[a-z]')
 
-  cd /usr/local/callbackandroid/
+  if [[ !(-d $callbackandroid_path) ]]; then 
+    echo "Error: folder callback doesn't exist"
+    exit  
+  fi
+
+  cd $callbackandroid_path
   ./bin/create $FOLDER/android $PACKAGE_NAME $ACTIVITY_NAME
 
   echo "android phonegap application created"
@@ -72,6 +84,7 @@ if [ "$build" = "on" ]; then
     exit          
   fi
 
+  echo "updating www to application..."
   # delete wwww
   rm -rf android/assets/www/
   # create www
