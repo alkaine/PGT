@@ -10,6 +10,212 @@ deploy=off
 run=off
 target=""
 
+function check_devices
+{
+  if [ "$(adb devices)" = "List of devices attached " ]; then
+    
+    # restart brige
+    adb kill-server
+    adb start-server
+
+    # still no devices
+    if [ "$(adb devices)" = "List of devices attached " ]; then
+      # No devices attached found
+      return 1
+    fi
+  fi  
+  
+  # Found at least one attached device
+  return 0
+}
+
+function get_first_online_device
+{
+  devices=$(check_devices)
+  if [[ !(devices) ]]; then
+    return 1
+  else
+    echo $devices
+    old_IFS=$IFS
+    IFS=$'\n'
+    i=0
+    target=""
+    # each devices
+    for line in $(adb devices)
+    do  
+      ((i++))
+
+      # skip the first line
+      if [ $i = 1 ]; then
+       continue
+      fi
+
+      IFS=$old_IFS
+      # each part of the device
+      for word in $line
+      do
+        if [ "$target" = "" ]; then
+          target=$word
+          
+        elif [ "$word" = "offline" ]; then
+          target=""
+        elif [ "$word" = "device" ]; then
+          break 2
+        fi
+      done
+    done  
+    IFS=$old_IFS
+  fi
+}
+
+function get_target_option
+{
+  # build on specific tqrget
+  if [[ !("$target" = "") && !("$target" = "device") && !("$target" = "emulator") ]]; then
+    targetoption="-s $target"
+
+  # build on usb device  
+  elif [[ ("$target" = "device") ]]; then
+    targetoption="-d"   
+
+  # build on emulator  
+  elif [[ ("$target" = "emulator") ]]; then
+    targetoption="-e"   
+
+  # build on something  
+  else
+    get_first_online_device
+
+    if [[ $target = "" ]]; then
+      echo "Error: no online device found"
+      exit
+    fi
+
+    targetoption="-s $target"   
+  fi
+}
+
+function get_config
+{
+  if [ "$ACTIVITY" = "" ]; then
+    cd android/
+    echo "getting config file..."
+    # get phonegap config file
+    . ./.phonegap/config
+    cd ..
+  fi  
+}
+
+function check_folder_android
+{
+  if [[ !(-d android/) ]]; then 
+    echo "Error: folder android doesn't exist"
+    exit    
+  elif [[ (-z $(ls android/)) ]]; then  
+    echo "Error: folder android is empty"
+    exit          
+  fi  
+}
+
+function create
+{
+  echo "\n--- CREATE ---/n"
+
+  # folder doesn't exist
+  if [[ !(-d android/) ]]; then 
+    echo "creating android folder..."
+    mkdir android
+  # if folder not empty, trow error
+  elif [[ !(-z $(ls android/)) ]]; then
+    echo "Error: folder android must be empty"
+    exit
+  fi    
+
+  ACTIVITY_NAME=${PWD##*/}
+  PACKAGE_NAME=com.phonegap.$(echo $ACTIVITY_NAME | tr '[A-Z]' '[a-z]')
+
+  if [[ !(-d $callbackandroid_path) ]]; then 
+    echo "Error: folder callback doesn't exist"
+    exit  
+  fi
+
+  cd $callbackandroid_path
+  ./bin/create $FOLDER/android $PACKAGE_NAME $ACTIVITY_NAME
+
+  echo "android phonegap application created"  
+}
+
+function build
+{
+  echo "\n--- BUILD ---\n"
+
+  # folder android
+  check_folder_android
+
+  echo "updating www to application..."
+
+  # delete wwww
+  rm -rf android/assets/www/
+  # create www
+  mkdir android/assets/www/
+  # copy all files in android/assets/www
+  cp -r www/* android/assets/www/
+
+  echo "compiling..."
+  cd android  
+  ant debug  
+  cd ..
+}
+
+function deploy
+{
+  echo "\n--- DEPLOY ---\n"
+
+  check_folder_android
+
+  get_config
+  get_target_option
+
+  echo "installing on $target..."
+  adb $targetoption install -r android/bin/$ACTIVITY-debug.apk
+}
+
+function run
+{
+  echo "\n--- RUN ---\n"
+
+  check_folder_android
+
+  get_config
+  get_target_option
+
+  echo "starting $PACKAGE/$PACKAGE.$ACTIVITY..."
+  
+  echo "adb $targetoption shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY"
+  start=$(adb $targetoption shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY)
+
+  if [[ "$(echo $start | grep "Warning:\ Activity\ not\ started" -c)" = "1" ]]; then
+    echo "Warning: Application already running and use the current package"
+    echo "Forcing new installation..."
+    build
+    deploy
+    run
+    exit      
+  elif [[ "$(echo $start | grep "error" -c)" = "1" ]]; then   
+    # show the output 
+    echo $start
+    exit    
+  fi
+
+  # show the output 
+  echo $start
+    
+  echo "activate logs"
+  # just show phonegap log with the time
+  adb $targetoption logcat -v time PhoneGapLog:V *:S
+  
+}
+
 # options
 while getopts ":p:t:cbdr" opt; do
   case $opt in
@@ -50,133 +256,19 @@ fi
 FOLDER=${PWD}
 
 if [ "$create" = "on" ]; then
-  echo "\n--- CREATE ---/n"
-
-  # if folder not empty, trow error
-  if [[ !(-z $(ls android/)) ]]; then
-      echo "Error: folder android must be empty"
-      exit
-  fi    
-
-  ACTIVITY_NAME=${PWD##*/}
-  PACKAGE_NAME=com.phonegap.$(echo $ACTIVITY_NAME | tr '[A-Z]' '[a-z]')
-
-  if [[ !(-d $callbackandroid_path) ]]; then 
-    echo "Error: folder callback doesn't exist"
-    exit  
-  fi
-
-  cd $callbackandroid_path
-  ./bin/create $FOLDER/android $PACKAGE_NAME $ACTIVITY_NAME
-
-  echo "android phonegap application created"
+  create
 fi
 
 if [ "$build" = "on" ]; then
-  echo "\n--- BUILD ---\n"
-
-  # folder android
-  if [[ !(-d android/) ]]; then 
-    echo "Error: folder android doesn't exist"
-    exit    
-  elif [[ (-z $(ls android/)) ]]; then  
-    echo "Error: folder android is empty"
-    exit          
-  fi
-
-  echo "updating www to application..."
-  # delete wwww
-  rm -rf android/assets/www/
-  # create www
-  mkdir android/assets/www/
-  # copy all files in android/assets/www
-  cp -r www/* android/assets/www/
-
-  echo cd android
-  cd android
-
-  echo "compiling..."
-  ant debug
+  build
 fi
 
 if [ "$deploy" = "on" ]; then
-  echo "\n--- DEPLOY ---\n"
-
-  # List of devices attached HT94SKF06374 device
-  if [ "$(adb devices)" = "List of devices attached " ]; then
-    
-    echo "No device found, trying to restart adb server..."
-
-    # restart brige
-    adb kill-server
-    adb start-server
-
-    # still no devices
-    if [ "$(adb devices)" = "List of devices attached " ]; then
-      echo "Error: can't find any device"
-      exit    
-    fi
-  fi        
-
-  echo "getting config file..."
-  # get phonegap config file
-  . ./.phonegap/config
-
-  echo "installing bin/$ACTIVITY-debug.apk..."
-  if [[ !("$target" = "") && !("$target" = "device") && !("$target" = "emulator") ]]; then
-    echo "installing on $target..."
-    adb -s $target install -r bin/$ACTIVITY-debug.apk
-  elif [[ ("$target" = "device") ]]; then
-    echo "installing on device..."
-    adb -d install -r bin/$ACTIVITY-debug.apk      
-  elif [[ ("$target" = "emulator") ]]; then
-    echo "installing on emulator..."
-    adb -e install -r bin/$ACTIVITY-debug.apk  
-  else
-    adb install -r bin/$ACTIVITY-debug.apk
-  fi         
-
+  deploy       
 fi
 
 if [ "$run" = "on" ]; then
-  echo "\n--- RUN ---\n"
-
-  # build on specific tqrget
-  echo "installing bin/$ACTIVITY-debug.apk..."
-  if [[ !("$target" = "") && !("$target" = "device") && !("$target" = "emulator") ]]; then
-    echo "starting $PACKAGE/$PACKAGE.$ACTIVITY on $target..."
-    adb -s $target shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY
-
-    echo "logcat PhoneGapLog"
-    # just show phonegap log with the time
-    adb -s $target logcat -v time PhoneGapLog:V *:S
-
-  # build on the first device  
-  elif [[ ("$target" = "device") ]]; then
-    echo "starting $PACKAGE/$PACKAGE.$ACTIVITY on device..."
-    adb -d shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY
-
-    echo "logcat PhoneGapLog"
-    # just show phonegap log with the time
-    adb -d logcat -v time PhoneGapLog:V *:S
-
-  # build on emulator  
-  elif [[ ("$target" = "emulator") ]]; then
-    echo "starting $PACKAGE/$PACKAGE.$ACTIVITY on emulator..."
-    adb -e shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY
-
-    echo "logcat PhoneGapLog"
-    # just show phonegap log with the time
-    adb -e logcat -v time PhoneGapLog:V *:S
-
-  # build on something  
-  else
-    echo "starting $PACKAGE/$PACKAGE.$ACTIVITY..."
-    adb shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY
-
-    echo "logcat PhoneGapLog"
-    # just show phonegap log with the time
-    adb logcat -v time PhoneGapLog:V *:S
-  fi     
-
+  run
 fi
+
+ 
