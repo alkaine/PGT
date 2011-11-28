@@ -3,6 +3,11 @@ Dependencies:
   Apache Ant
   CallbackAndroid
 
+Installation:
+  Configure the callbackandroid path
+  Add an alias to the tools folder:
+    alias pgt="~/Tools/PhoneGap-Tools/"
+    
 Options:
   -p default: null
   Project path
