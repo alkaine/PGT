@@ -12,6 +12,7 @@ target=""
 
 function check_devices
 {
+  adb devices
   if [ "$(adb devices)" = "List of devices attached " ]; then
     
     # restart brige
@@ -70,13 +71,15 @@ function get_first_online_device
 
 function get_target_option
 {
+  # check devices
+
   # build on specific tqrget
   if [[ !("$target" = "") && !("$target" = "device") && !("$target" = "emulator") ]]; then
     targetoption="-s $target"
 
   # build on usb device  
   elif [[ ("$target" = "device") ]]; then
-    targetoption="-d"   
+    targetoption="-d"
 
   # build on emulator  
   elif [[ ("$target" = "emulator") ]]; then
@@ -201,6 +204,7 @@ function run
     deploy
     run
     exit      
+    
   elif [[ "$(echo $start | grep "error" -c)" = "1" ]]; then   
     # show the output 
     echo $start
