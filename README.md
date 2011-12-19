@@ -47,14 +47,12 @@ Only show the phonegap generated logs.
 Set to "debug" to see all the logs.
   
 # Usage #
-``
-#Create application  
-pgt -c
 
-# Build, install and application
-pgt -bdr 
+### Create application ###
+<code>pgt -c</code>
 
-# Run application on myemulator
-pgt -rt "myemulator" -p "my/project/path/"
-</code>
-``
+### Build, install and application ###
+<code>pgt -bdr</code>
+
+### Run application on "myemulator" ###
+<code>pgt -rt "myemulator" -p "my/project/path/"</code>
