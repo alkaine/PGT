@@ -21,7 +21,7 @@ After create your project (<code>pgt -c</code>), you need to edit your <code>{PR
 * Run application: -r (default: false)
 * Logs: -b (default: "phonegap", values: "debug")
 
-# Usage #
+# Examples #
 
 ### Create application ###
 <code>pgt -c</code>
