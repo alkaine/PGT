@@ -9,6 +9,7 @@ build=off
 deploy=off
 run=off
 target=""
+log="phonegap"
 
 function check_devices
 {
@@ -164,6 +165,13 @@ function build
   # copy all files in android/assets/www
   cp -r www/* android/assets/www/
 
+  get_config
+
+  echo "copying phonegap js into $PHONEGAP_PATH"
+
+  # copy the phonegap js
+  cp $SOURCE_PHONEGAP_PATH $PHONEGAP_PATH
+
   echo "compiling..."
   cd android  
   ant debug  
@@ -214,14 +222,17 @@ function run
   # show the output 
   echo $start
     
-  echo "activate logs"
+  echo "activate logs $log"
   # just show phonegap log with the time
-  adb $targetoption logcat -v time PhoneGapLog:V *:S
-  
+  if [[ ("$log" = "phonegap") ]]; then
+    adb $targetoption logcat -v time PhoneGapLog:V *:S
+  elif [[ ("$log" = "debug") ]]; then
+    adb $targetoption logcat
+  fi  
 }
 
 # options
-while getopts ":p:t:cbdr" opt; do
+while getopts ":p:t:l:cbdr" opt; do
   case $opt in
     p) 
       if [[ !(-d $OPTARG) ]]; then 
@@ -239,6 +250,7 @@ while getopts ":p:t:cbdr" opt; do
     b) build=on;;    
     d) deploy=on;;
     r) run=on;;
+    l) log=$OPTARG;;
     \?)
       echo "Error: invalid option: -$OPTARG" >&2
       exit 1
@@ -274,5 +286,3 @@ fi
 if [ "$run" = "on" ]; then
   run
 fi
-
- 
