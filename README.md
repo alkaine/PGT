@@ -15,39 +15,39 @@ PHONEGAP_PATH=assets/javascript/lib/
 (of course, you'll have to change that)
 
 # Options #
-## -p ##
+### -p ###
   default: null
 Project path
 
-## -t ##
+### -t ###
   default: null
 Set to "device" to build on device.
 Set to "emulator" to build on emulator.
 Or use an available device.
 
-## -c ##
+### -c ###
   default: Off
 Create application
 
-## -b ## 
+### -b ### 
   default: Off
 Build application
 
-## -d ## 
+### -d ### 
   default: Off
 Deploy application
 
-## -r ## 
+### -r ### 
   default: Off
 Run application
 
-## -l ## 
+### -l ### 
   default: phonegap
 Only show the phonegap generated logs.
 Set to "debug" to see all the logs.
   
 # Usage #
-<code>
+``
 #Create application  
 pgt -c
 
@@ -57,3 +57,4 @@ pgt -bdr
 # Run application on myemulator
 pgt -rt "myemulator" -p "my/project/path/"
 </code>
+``
