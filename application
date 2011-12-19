@@ -167,10 +167,10 @@ function build
 
   get_config
 
-  echo "copying phonegap js into $PHONEGAP_PATH"
+  echo "copying android/.phonegap/android/phonegap-$VERSION.js into android/assets/www/$PHONEGAP_PATH"
 
   # copy the phonegap js
-  cp $SOURCE_PHONEGAP_PATH $PHONEGAP_PATH
+  cp android/.phonegap/android/phonegap-$VERSION.js www/$PHONEGAP_PATH
 
   echo "compiling..."
   cd android  
