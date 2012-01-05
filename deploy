@@ -7,7 +7,7 @@ function deploy
 	check_folder_android
 
 	get_config
-	get_target_option
+	get_target
 
 	echo "Installing on $target..."
 	adb $targetoption install -r android/bin/$ACTIVITY-debug.apk
