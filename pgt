@@ -1,7 +1,7 @@
 #! /bin/sh
 
-DIRECTORY=${PWD}
-DIRECTORY_NAME=${PWD##*/}
+CURRENT_DIRECTORY=${PWD}
+CURRENT_DIRECTORY_NAME=${PWD##*/}
 PGT_DIRECTORY=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
 # load config file
@@ -9,7 +9,7 @@ PGT_DIRECTORY=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
 if [[ !(-d $CALLBACK_ANDROID_PATH) ]]; then
 	echo "Error: folder $CALLBACK_ANDROID_PATH doesn't exist"
-	echo "Please change the config callbackandroid_path and specify the correct path"
+	echo "Please change CALLBACK_ANDROID_PATH in the config file and specify the correct path"
 	exit
 fi
 
@@ -151,6 +151,7 @@ fi
 if [ "$build" = "on" ]; then
 	. $PGT_DIRECTORY/build
 	build
+	compil
 fi
 
 if [ "$deploy" = "on" ]; then
