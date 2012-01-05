@@ -16,7 +16,7 @@ Change the <code>CALLBACK_ANDROID_PATH</code> in the config file
 * Build application: -b (default: false)
 * Deploy application: -d (default: false)
 * Run application: -r (default: false)
-* Logs: -b (default: "phonegap", values: "debug")
+* Logs: -l (default: "phonegap", values: "debug")
 
 # Examples #
 
