@@ -7,7 +7,7 @@
 Add an alias to the PGT folder:
 <code>alias pgt="~/Tools/PhoneGap-Tools/pgt"</code>
 <br>
-Change the CALLBACK_ANDROID_PATH in the config file
+Change the <code>CALLBACK_ANDROID_PATH</code> in the config file
 
 # Options #
 * Create application: -c (default: false)
