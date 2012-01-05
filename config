@@ -1,0 +1,3 @@
+#! /bin/sh
+
+CALLBACK_ANDROID_PATH="/usr/local/callbackandroid/"
