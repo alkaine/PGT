@@ -21,16 +21,16 @@ function get_custom_builder_path
 	read builder
 
 	# testing if the file exists
-	if [[ !(-f "$DIRECTORY/$builder") ]]; then
+	if [[ !(-f "$CURRENT_DIRECTORY/$builder") ]]; then
 		cant_find_custom_builder
 	else
-		echo "Path to the custom builder: $DIRECTORY/$builder"
+		echo "Path to the custom builder: $CURRENT_DIRECTORY/$builder"
 	fi
 }
 
 function cant_find_custom_builder
 {
-	echo "Error: Unable to find the file $DIRECTORY/$builder"
+	echo "Error: Unable to find the file $CURRENT_DIRECTORY/$builder"
 	builder="no"
 	echo "Do you wish to create an empty file at the given path and fill it later? (y/n)"
 	read response
@@ -38,8 +38,8 @@ function cant_find_custom_builder
 	case $response in
 		yes|Yes|y)
 			echo "Creating custom builder shell script..."
-			echo "#! /bin/sh" >> $DIRECTORY/$builder
-			chmod u+x $DIRECTORY/$builder
+			echo "#! /bin/sh" >> $CURRENT_DIRECTORY/$builder
+			chmod u+x $CURRENT_DIRECTORY/$builder
 			;;
 		no|No|n)
 			echo "Still want to configure the custom builder path now? (y/n)"
