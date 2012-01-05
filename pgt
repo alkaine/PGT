@@ -1,10 +1,17 @@
 #! /bin/sh
 
 DIRECTORY=${PWD}
+DIRECTORY_NAME=${PWD##*/}
 PGT_DIRECTORY=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
 # config
 callbackandroid_path="/usr/local/callbackandroid/"
+
+if [[ !(-d $callbackandroid_path) ]]; then
+	echo "Error: folder $callbackandroid_path doesn't exist"
+	echo "Please change the config callbackandroid_path and specify the correct path"
+	exit
+fi
 
 # defaults
 create=off
