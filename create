@@ -1,0 +1,56 @@
+#! /bin/sh
+
+function create
+{
+	echo "\n--- CREATE ---/n"
+
+	# folder doesn't exist
+	if [[ !(-d android/) ]]; then
+		echo "creating android folder..."
+		mkdir android
+	# if folder not empty, trow error
+	elif [[ !(-z $(ls android/)) ]]; then
+		echo "Error: folder android must be empty"
+		exit
+	fi
+
+	ACTIVITY_NAME=${PWD##*/}
+	PACKAGE_NAME=com.phonegap.$(echo $ACTIVITY_NAME | tr '[A-Z]' '[a-z]')
+
+	if [[ !(-d $callbackandroid_path) ]]; then
+		echo "Error: folder $callbackandroid_path doesn't exist"
+		exit
+	fi
+
+	echo "creating pgt folder"
+	mkdir android/.pgt
+	cd android/.pgt
+
+	echo "Creating PGT config file"
+	# create a config file with empty parameters
+	echo "# custom builder script before compilation" >> config
+
+	create_custom_builder
+
+	echo "BUILDER=$builder" >> config
+	echo "# directory of the webapp relative to the app root" >> config
+
+	echo "Specify the path to the web app root relative to the app root"
+	read webapp_root
+
+	echo "WWW_DIR=$webapp_root" >> config
+
+	echo "# final phonegap library path in the android app assets" >> config
+	echo "Specify the final path where phonegap should be (relative to the android/assets/www/ directory)"
+
+	read phonegap_path
+	echo "PHONEGAP_PATH=$phonegap_path" >> config
+
+	cd -
+
+	cd $callbackandroid_path
+	./bin/create $DIRECTORY/android $PACKAGE_NAME $ACTIVITY_NAME
+
+	echo "Android phonegap application created"
+	cd -
+}

@@ -1,0 +1,50 @@
+#! /bin/sh
+
+function build
+{
+	echo "\n--- BUILD ---\n"
+
+	# folder android
+	check_folder_android
+
+	get_config
+
+	# got a builder?
+	if test "${BUILDER+defined}" && [ ${BUILDER} != "no" ]; then
+		echo "\n-------------------------\n"
+		echo "Launching the custom builder..."
+		# check file permission
+		if [[ !(-x $file) ]]; then
+			# can't execute the builder
+			echo "Adding the necessary rights to the builder"
+			chmod u+x $BUILDER
+		fi
+		./$BUILDER
+	fi
+
+	echo "\n-------------------------\n"
+
+	echo "Cleaning android/assets/www"
+	# delete wwww
+	rm -rf android/assets/www/
+	# create www
+	mkdir android/assets/www/
+
+	echo "Updating android/assets/www"
+	# copy all files in android/assets/www
+	cp -r $WWW_DIR/* android/assets/www/
+
+	echo "Copying android/.phonegap/android/phonegap-$VERSION.js into android/assets/www/$PHONEGAP_PATH"
+	# copy the phonegap js
+	cp android/.phonegap/android/phonegap-$VERSION.js android/assets/www/$PHONEGAP_PATH
+
+	# adding the .gitignore
+	echo .gitignore > android/assets/www/.gitignore
+
+	echo "\n-------------------------\n"
+
+	echo "Compiling..."
+	cd android
+	ant debug
+	cd ..
+}

@@ -1,0 +1,14 @@
+#! /bin/sh
+
+function deploy
+{
+	echo "\n--- DEPLOY ---\n"
+
+	check_folder_android
+
+	get_config
+	get_target_option
+
+	echo "Installing on $target..."
+	adb $targetoption install -r android/bin/$ACTIVITY-debug.apk
+}

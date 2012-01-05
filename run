@@ -1,0 +1,41 @@
+#! /bin/sh
+
+function run
+{
+	echo "\n--- RUN ---\n"
+
+	check_folder_android
+
+	get_config
+	get_target_option
+
+	echo "Starting $PACKAGE/$PACKAGE.$ACTIVITY..."
+
+	echo "adb $targetoption shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY"
+	start=$(adb $targetoption shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY)
+
+	if [[ "$(echo $start | grep "Warning:\ Activity\ not\ started" -c)" = "1" ]]; then
+		echo "Warning: Application already running and use the current package"
+		echo "Forcing new installation..."
+		build
+		deploy
+		run
+		exit
+
+	elif [[ "$(echo $start | grep "error" -c)" = "1" ]]; then
+		# show the output
+		echo $start
+		exit
+	fi
+
+	# show the output
+	echo $start
+
+	echo "activate logs $log"
+	# just show phonegap log with the time
+	if [[ ("$log" = "phonegap") ]]; then
+		adb $targetoption logcat -v time PhoneGapLog:V *:S
+	elif [[ ("$log" = "debug") ]]; then
+		adb $targetoption logcat
+	fi
+}
