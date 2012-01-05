@@ -14,43 +14,48 @@ function create
 		exit
 	fi
 
-	ACTIVITY_NAME=${PWD##*/}
-	PACKAGE_NAME=com.phonegap.$(echo $ACTIVITY_NAME | tr '[A-Z]' '[a-z]')
-
-	if [[ !(-d $callbackandroid_path) ]]; then
-		echo "Error: folder $callbackandroid_path doesn't exist"
-		exit
-	fi
-
-	echo "creating pgt folder"
+	echo "Creating PGT folder"
 	mkdir android/.pgt
 	cd android/.pgt
 
 	echo "Creating PGT config file"
-	# create a config file with empty parameters
-	echo "# custom builder script before compilation" >> config
 
-	create_custom_builder
-
-	echo "BUILDER=$builder" >> config
-	echo "# directory of the webapp relative to the app root" >> config
-
-	echo "Specify the path to the web app root relative to the app root"
-	read webapp_root
-
-	echo "WWW_DIR=$webapp_root" >> config
-
-	echo "# final phonegap library path in the android app assets" >> config
-	echo "Specify the final path where phonegap should be (relative to the android/assets/www/ directory)"
-
-	read phonegap_path
-	echo "PHONEGAP_PATH=$phonegap_path" >> config
+	set_builder
+	set_webapp_path
+	set_phonegap_final_path
 
 	cd -
 
 	cd $callbackandroid_path
+	ACTIVITY_NAME=DIRECTORY_NAME
+	PACKAGE_NAME=com.phonegap.$(echo $ACTIVITY_NAME | tr '[A-Z]' '[a-z]')
 	./bin/create $DIRECTORY/android $PACKAGE_NAME $ACTIVITY_NAME
 
 	echo "Android phonegap application created"
+
 	cd -
+}
+
+function set_builder
+{
+	echo "# custom builder script before compilation" >> config
+	. $PGT_DIRECTORY/builder
+	create_custom_builder
+	echo "BUILDER=$builder" >> config
+}
+
+function set_webapp_path
+{
+	echo "# directory of the webapp relative to the app root" >> config
+	echo "Specify the path to the web app root relative to the app root"
+	read webapp_root
+	echo "WWW_DIR=$webapp_root" >> config
+}
+
+function set_phonegap_final_path
+{
+	echo "# final phonegap library path in the android app assets" >> config
+	echo "Specify the final path where phonegap should be (relative to the android/assets/www/ directory)"
+	read phonegap_path
+	echo "PHONEGAP_PATH=$phonegap_path" >> config
 }
