@@ -27,7 +27,7 @@ function create
 	cd -
 
 	cd $CALLBACK_ANDROID_PATH
-	ACTIVITY_NAME=DIRECTORY_NAME
+	ACTIVITY_NAME=$DIRECTORY_NAME
 	PACKAGE_NAME=com.phonegap.$(echo $ACTIVITY_NAME | tr '[A-Z]' '[a-z]')
 	./bin/create $DIRECTORY/android $PACKAGE_NAME $ACTIVITY_NAME
 
