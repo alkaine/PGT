@@ -27,18 +27,34 @@ function create
 	cd -
 
 	cd $CALLBACK_ANDROID_PATH
-	ACTIVITY_NAME=$DIRECTORY_NAME
+	ACTIVITY_NAME=$CURRENT_DIRECTORY_NAME
 	PACKAGE_NAME=com.phonegap.$(echo $ACTIVITY_NAME | tr '[A-Z]' '[a-z]')
-	./bin/create $DIRECTORY/android $PACKAGE_NAME $ACTIVITY_NAME
-
-	echo "Android phonegap application created"
+	./bin/create $CURRENT_DIRECTORY/android $PACKAGE_NAME $ACTIVITY_NAME
 
 	cd -
+
+	echo "Deleting phonegap folder"
+	rm -rf android/phonegap
+
+	echo "Deleting readme.md"
+	rm android/.phonegap/readme.md
+	rm android/.phonegap/android/readme.md
+
+	get_config
+
+	echo "Moving phonegap files"
+	mv android/.phonegap/android/phonegap-$VERSION.js android/.phonegap/phonegap-$VERSION.js
+	mv android/.phonegap/android/phonegap-$VERSION.jar android/.phonegap/phonegap-$VERSION.jar
+
+	echo "Deleting android/.phonegap/android/"
+	rm -rf android/.phonegap/android/
+
+	echo "Android phonegap application created"
 }
 
 function set_builder
 {
-	echo "# custom builder script before compilation" >> config
+	echo "# # custom builder script before compilation (set to \"no\" to disable)" >> config
 	. $PGT_DIRECTORY/builder
 	create_custom_builder
 	echo "BUILDER=$builder" >> config
