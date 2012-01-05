@@ -4,11 +4,11 @@ DIRECTORY=${PWD}
 DIRECTORY_NAME=${PWD##*/}
 PGT_DIRECTORY=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
-# config
-callbackandroid_path="/usr/local/callbackandroid/"
+# load config file
+. $PGT_DIRECTORY/config
 
-if [[ !(-d $callbackandroid_path) ]]; then
-	echo "Error: folder $callbackandroid_path doesn't exist"
+if [[ !(-d $CALLBACK_ANDROID_PATH) ]]; then
+	echo "Error: folder $CALLBACK_ANDROID_PATH doesn't exist"
 	echo "Please change the config callbackandroid_path and specify the correct path"
 	exit
 fi
@@ -117,7 +117,7 @@ function get_config
 		# get phonegap config file
 		. ./.phonegap/config
 		# get pgt config file
-		echo "Getting phonegaptools config file..."
+		echo "Getting PGT config file..."
 		. ./.pgt/config
 		cd ..
 	fi
