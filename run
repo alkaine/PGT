@@ -7,7 +7,7 @@ function run
 	check_folder_android
 
 	get_config
-	get_target_option
+	get_target
 
 	echo "Starting $PACKAGE/$PACKAGE.$ACTIVITY..."
 
