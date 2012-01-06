@@ -31,7 +31,11 @@ function run
 	# show the output
 	echo $start
 
-	echo "activate logs $log"
+	echo "Logging $PACKAGE/$PACKAGE.$ACTIVITY..."
+
+	# clear logs
+	adb logcat -c
+
 	# just show phonegap log with the time
 	if [[ ("$log" = "phonegap") ]]; then
 		adb $targetoption logcat -v time PhoneGapLog:V *:S | coloredlogcat.py

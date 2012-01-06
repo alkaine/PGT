@@ -34,7 +34,7 @@ function build
 	# copy all files in android/assets/www
 	cp -r $WWW_DIR/* android/assets/www/
 
-	# adding the .gitignore
+	# adding the .gitignore in the assets folder
 	echo .gitignore > android/assets/www/.gitignore
 }
 
@@ -43,7 +43,12 @@ function compil
 	echo "\n""$COLOR_YELLOW""--- COMPILATION ---""$COLOR_WHITE""\n"
 
 	echo "Compiling..."
+
 	cd android
+
+	# bug sdk-16
+	ant clean
+
 	ant debug
 	cd ..
 }

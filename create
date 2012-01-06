@@ -49,6 +49,16 @@ function create
 	echo "Deleting android/.phonegap/android/"
 	rm -rf android/.phonegap/android/
 
+	# adding the gitignore to keep folders
+	echo .gitignore > android/bin/.gitignore
+	echo .gitignore > android/gen/.gitignore
+
+	# adding a git ignore to ignore directories
+	echo .gitignore > android/.gitignore
+	echo assets/www/* >> android/.gitignore
+	echo build/* >> android/.gitignore
+	echo gen/* >> android/.gitignore
+
 	echo "Android phonegap application created"
 }
 
