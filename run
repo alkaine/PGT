@@ -2,7 +2,7 @@
 
 function run
 {
-	echo "\n--- RUN ---\n"
+	echo "\n""$COLOR_YELLOW""--- RUN ---""$COLOR_WHITE""\n"
 
 	check_folder_android
 
@@ -34,8 +34,8 @@ function run
 	echo "activate logs $log"
 	# just show phonegap log with the time
 	if [[ ("$log" = "phonegap") ]]; then
-		adb $targetoption logcat -v time PhoneGapLog:V *:S
+		adb $targetoption logcat -v time PhoneGapLog:V *:S | coloredlogcat.py
 	elif [[ ("$log" = "debug") ]]; then
-		adb $targetoption logcat
+		adb $targetoption logcat | coloredlogcat.py
 	fi
 }

@@ -2,7 +2,7 @@
 
 function create
 {
-	echo "\n--- CREATE ---/n"
+	echo "\n""$COLOR_YELLOW""--- CREATE ---""$COLOR_WHITE""/n"
 
 	# folder doesn't exist
 	if [[ !(-d android/) ]]; then

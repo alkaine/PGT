@@ -2,7 +2,7 @@
 
 function deploy
 {
-	echo "\n--- DEPLOY ---\n"
+	echo "\n""$COLOR_YELLOW""--- DEPLOY ---""$COLOR_WHITE""\n"
 
 	check_folder_android
 

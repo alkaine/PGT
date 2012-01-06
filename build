@@ -2,7 +2,7 @@
 
 function build
 {
-	echo "\n--- BUILD ---\n"
+	echo "\n""$COLOR_YELLOW""--- BUILD ---""$COLOR_WHITE""\n"
 
 	# folder android
 	check_folder_android
@@ -11,7 +11,7 @@ function build
 
 	# got a builder?
 	if test "${BUILDER+defined}" && [ ${BUILDER} != "no" ]; then
-		echo "\n-------------------------\n"
+		echo "$COLOR_YELLOW" "\n-------------------------""$COLOR_WHITE""\n"
 		echo "Launching the custom builder..."
 		# check file permission
 		if [[ !(-x $BUILDER) ]]; then
@@ -22,7 +22,7 @@ function build
 		./$BUILDER
 	fi
 
-	echo "\n-------------------------\n"
+	echo "\n""$COLOR_YELLOW""-------------------------""$COLOR_WHITE""\n"
 
 	echo "Cleaning android/assets/www"
 	# delete wwww
@@ -40,7 +40,7 @@ function build
 
 function compil
 {
-	echo "\n--- COMPILATION ---\n"
+	echo "\n""$COLOR_YELLOW""--- COMPILATION ---""$COLOR_WHITE""\n"
 
 	echo "Compiling..."
 	cd android
