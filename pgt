@@ -134,6 +134,9 @@ function check_folder_android
 	fi
 }
 
+# load the colors
+. $PGT_DIRECTORY/tools/colors
+
 # level to high
 if [ ${PWD##*/} = "android" ]; then
 	echo "Going to parent directory"
