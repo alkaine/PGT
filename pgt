@@ -1,0 +1,165 @@
+#! /bin/sh
+
+CURRENT_DIRECTORY=${PWD}
+CURRENT_DIRECTORY_NAME=${PWD##*/}
+PGT_DIRECTORY=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
+
+# load config file
+. $PGT_DIRECTORY/config
+
+if [[ !(-d $CALLBACK_ANDROID_PATH) ]]; then
+	echo "Error: folder $CALLBACK_ANDROID_PATH doesn't exist"
+	echo "Please change CALLBACK_ANDROID_PATH in the config file and specify the correct path"
+	exit
+fi
+
+# defaults
+create=off
+build=off
+deploy=off
+run=off
+target=""
+log="phonegap"
+
+function check_devices
+{
+	adb devices
+	if [ "$(adb devices)" = "List of devices attached " ]; then
+
+		# restart brige
+		adb kill-server
+		adb start-server
+
+		# still no devices
+		if [ "$(adb devices)" = "List of devices attached " ]; then
+			# No devices attached found
+			return 1
+		fi
+	fi
+
+	# Found at least one attached device
+	return 0
+}
+
+function get_first_online_device
+{
+	devices=$(check_devices)
+	if [[ !(devices) ]]; then
+		return 1
+	else
+		echo $devices
+		old_IFS=$IFS
+		IFS=$'\n'
+		i=0
+		target=""
+		# each devices
+		for line in $(adb devices)
+		do
+			((i++))
+
+			# skip the first line
+			if [ $i = 1 ]; then
+			 continue
+			fi
+
+			IFS=$old_IFS
+			# each part of the device
+			for word in $line
+			do
+				if [ "$target" = "" ]; then
+					target=$word
+
+				elif [ "$word" = "offline" ]; then
+					target=""
+				elif [ "$word" = "device" ]; then
+					break 2
+				fi
+			done
+		done
+		IFS=$old_IFS
+	fi
+}
+
+function get_target
+{
+	# check devices
+
+	# build on specific target
+	if [[ !("$target" = "") && !("$target" = "device") && !("$target" = "emulator") ]]; then
+		targetoption="-s $target"
+
+	# build on usb device
+	elif [[ ("$target" = "device") ]]; then
+		targetoption="-d"
+
+	# build on emulator
+	elif [[ ("$target" = "emulator") ]]; then
+		targetoption="-e"
+
+	# build on something
+	else
+		get_first_online_device
+
+		if [[ $target = "" ]]; then
+			echo "Error: no online device found"
+			exit
+		fi
+
+		targetoption="-s $target"
+	fi
+}
+
+function get_config
+{
+	if [ "$ACTIVITY" = "" ]; then
+		cd android/
+		echo "Getting phonegap config file..."
+		# get phonegap config file
+		. ./.phonegap/config
+		# get pgt config file
+		echo "Getting PGT config file..."
+		. ./.pgt/config
+		cd ..
+	fi
+}
+
+function check_folder_android
+{
+	if [[ !(-d android/) ]]; then
+		echo "Error: folder android doesn't exist"
+		exit
+	elif [[ (-z $(ls android/)) ]]; then
+		echo "Error: folder android is empty"
+		exit
+	fi
+}
+
+# level to high
+if [ ${PWD##*/} = "android" ]; then
+	echo "Going to parent directory"
+	cd ..
+fi
+
+. $PGT_DIRECTORY/user_options
+get_options "$@"
+
+if [ "$create" = "on" ]; then
+	. $PGT_DIRECTORY/create
+	create
+fi
+
+if [ "$build" = "on" ]; then
+	. $PGT_DIRECTORY/build
+	build
+	compil
+fi
+
+if [ "$deploy" = "on" ]; then
+	. $PGT_DIRECTORY/deploy
+	deploy
+fi
+
+if [ "$run" = "on" ]; then
+	. $PGT_DIRECTORY/run
+	run
+fi
