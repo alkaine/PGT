@@ -1,6 +1,6 @@
 # PGT (PhoneGapTools) #
 
-PGT is a tool created to simplify and accelerate the create/building/deploy/run an Android application.
+PGT is a tool created to simplify and accelerate the creating/building/deploying/running of an Android based application.
 
 # Requirement #
 * Android Tools [Home page](http://tools.android.com/)
