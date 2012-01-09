@@ -38,8 +38,8 @@ function run
 
 	# just show phonegap log with the time
 	if [[ ("$log" = "phonegap") ]]; then
-		adb $targetoption logcat -v time PhoneGapLog:V *:S | tools/coloredlogcat.py
+		adb $targetoption logcat -v time PhoneGapLog:V *:S | $PGT_DIRECTORY/tools/coloredlogcat.py
 	elif [[ ("$log" = "debug") ]]; then
-		adb $targetoption logcat | coloredlogcat.py
+		adb $targetoption logcat | $PGT_DIRECTORY/tools/coloredlogcat.py
 	fi
 }
