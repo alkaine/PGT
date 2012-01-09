@@ -65,7 +65,7 @@ function create
 function set_builder
 {
 	echo "# # custom builder script before compilation (set to \"no\" to disable)" >> config
-	. $PGT_DIRECTORY/builder
+	. $PGT_DIRECTORY/options/builder
 	create_custom_builder
 	echo "BUILDER=$builder" >> config
 }

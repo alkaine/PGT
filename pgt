@@ -134,32 +134,36 @@ function check_folder_android
 	fi
 }
 
+# load the colors
+. $PGT_DIRECTORY/tools/colors
+
 # level to high
 if [ ${PWD##*/} = "android" ]; then
 	echo "Going to parent directory"
 	cd ..
 fi
 
-. $PGT_DIRECTORY/user_options
+. $PGT_DIRECTORY/options/user_options
 get_options "$@"
 
 if [ "$create" = "on" ]; then
-	. $PGT_DIRECTORY/create
+	. $PGT_DIRECTORY/actions/create
 	create
 fi
 
 if [ "$build" = "on" ]; then
-	. $PGT_DIRECTORY/build
+	. $PGT_DIRECTORY/actions/build
 	build
+	. $PGT_DIRECTORY/actions/compil
 	compil
 fi
 
 if [ "$deploy" = "on" ]; then
-	. $PGT_DIRECTORY/deploy
+	. $PGT_DIRECTORY/actions/deploy
 	deploy
 fi
 
 if [ "$run" = "on" ]; then
-	. $PGT_DIRECTORY/run
+	. $PGT_DIRECTORY/actions/run
 	run
 fi
