@@ -49,9 +49,15 @@ function create
 	echo "Deleting android/.phonegap/android/"
 	rm -rf android/.phonegap/android/
 
+	echo "Cleaning android/www/assets/"
+	rm -rf android/www/assets/
+	mkdir android/www/assets/
+
 	# adding the gitignore to keep folders
 	echo .gitignore > android/bin/.gitignore
+	mkdir android/gen
 	echo .gitignore > android/gen/.gitignore
+	echo .gitignore > android/assets/www/.gitignore
 
 	# adding a git ignore to ignore directories
 	echo .gitignore > android/.gitignore
