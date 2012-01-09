@@ -18,8 +18,8 @@ create=off
 build=off
 deploy=off
 run=off
-target=""
-log="phonegap"
+target="device"
+log="debug"
 
 function check_devices
 {
