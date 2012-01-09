@@ -16,11 +16,11 @@ Change the <code>CALLBACK_ANDROID_PATH</code> in the config file
 # Options #
 * Create application: -c (default: false)
 * Project path: -p (default: current path)
-* Target: -t (default: first connected device, values: "device" | "emulator" | device_name)
+* Target: -t (default: "device", values: "emulator" | device_name)
 * Build application: -b (default: false)
 * Deploy application: -d (default: false)
 * Run application: -r (default: false)
-* Logs: -l (default: "phonegap", values: "debug")
+* Logs: -l (default:"device")
 
 # Examples #
 
@@ -31,10 +31,13 @@ Change the <code>CALLBACK_ANDROID_PATH</code> in the config file
 <code>pgt -b</code>
 
 ### Deploy application on the first connected device ###
-<code>pgt -dt "device"</code>
+<code>pgt -d</code>
 
 ### Run application on the first connected device ###
-<code>pgt -rt "device"</code>
+<code>pgt -r</code>
+
+### Build, deploy and run on the first connected device ###
+<code>pgt -bdr</code>
 
 ### Advanced ###
 <code>pgt bdr -t "myemulator" -p "my/project/path/"</code>
