@@ -2,7 +2,7 @@
 
 function create
 {
-	echo "\n""$COLOR_YELLOW""--- CREATE ---""$COLOR_WHITE""/n"
+	log_action_separator "CREATE"
 
 	# folder doesn't exist
 	if [[ !(-d android/) ]]; then
@@ -10,7 +10,7 @@ function create
 		mkdir android
 	# if folder not empty, trow error
 	elif [[ !(-z $(ls android/)) ]]; then
-		echo "Error: folder android must be empty"
+		log_error "Folder android must be empty"
 		exit
 	fi
 

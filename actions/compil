@@ -2,9 +2,7 @@
 
 function compil
 {
-	echo "\n""$COLOR_YELLOW""--- COMPILATION ---""$COLOR_WHITE""\n"
-
-	echo "Compiling..."
+	log_action_separator "COMPILATION"
 
 	cd android
 

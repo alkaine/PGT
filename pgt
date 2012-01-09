@@ -4,11 +4,25 @@ CURRENT_DIRECTORY=${PWD}
 CURRENT_DIRECTORY_NAME=${PWD##*/}
 PGT_DIRECTORY=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
+PGT_DIRECTORY="hehe"
+
+if [[ !(-d $PGT_DIRECTORY) ]]; then
+	echo "\\033[0;31m""Error: folder $PGT_DIRECTORY doesn't exist""\\033[0;37m"
+	echo "Please verify if you add correctly the path of PGT"
+	exit
+fi
+
 # load config file
 . $PGT_DIRECTORY/config
 
+# load the colors
+. $PGT_DIRECTORY/tools/colors
+
+# load the logs tools
+. $PGT_DIRECTORY/tools/log
+
 if [[ !(-d $CALLBACK_ANDROID_PATH) ]]; then
-	echo "Error: folder $CALLBACK_ANDROID_PATH doesn't exist"
+	log_error "folder $CALLBACK_ANDROID_PATH doesn't exist"
 	echo "Please change CALLBACK_ANDROID_PATH in the config file and specify the correct path"
 	exit
 fi
@@ -133,9 +147,6 @@ function check_folder_android
 		exit
 	fi
 }
-
-# load the colors
-. $PGT_DIRECTORY/tools/colors
 
 # level to high
 if [ ${PWD##*/} = "android" ]; then

@@ -1,0 +1,30 @@
+#! /bin/sh
+
+# load config
+. $PGT_DIRECTORY/config
+
+function log_action_separator
+{
+	echo "\n""$COLOR_SEPARATOR""-------- $1 --------""$COLOR_WHITE""\n"
+}
+
+function log_separator
+{
+	echo "\n""$COLOR_SEPARATOR""-------------------------""$COLOR_WHITE""\n"
+}
+
+function log_info
+{
+	echo "$COLOR_LOG_INFO""Info: $1""$COLOR_WHITE"
+}
+
+function log_error
+{
+
+	echo "$COLOR_LOG_ERROR""Error: $1""$COLOR_WHITE"
+}
+
+function log_success
+{
+	echo "$COLOR_LOG_SUCCESS""Success: $1""$COLOR_WHITE"
+}

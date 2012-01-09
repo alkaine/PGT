@@ -2,7 +2,7 @@
 
 function run
 {
-	echo "\n""$COLOR_YELLOW""--- RUN ---""$COLOR_WHITE""\n"
+	log_action_separator "RUN"
 
 	check_folder_android
 

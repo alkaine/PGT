@@ -30,7 +30,8 @@ function get_custom_builder_path
 
 function cant_find_custom_builder
 {
-	echo "Error: Unable to find the file $CURRENT_DIRECTORY/$builder"
+	log_error "Unable to find the file $CURRENT_DIRECTORY/$builder"
+
 	echo "Do you wish to create an empty file at the given path and fill it later? (y/n)"
 	read response
 

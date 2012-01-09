@@ -7,14 +7,13 @@ function get_options
 		case $opt in
 			p)
 				if [[ !(-d $OPTARG) ]]; then
-					echo "Error: application folder $OPTARG doesn't exist"
+					log_error "application folder $OPTARG doesn't exist"
 					exit
 				fi
 				echo cd $OPTARG
 				cd $OPTARG
 				;;
 			t)
-				echo target=$OPTARG
 				target=$OPTARG
 				;;
 			c) create=on;;
@@ -23,11 +22,11 @@ function get_options
 			r) run=on;;
 			l) log=$OPTARG;;
 			\?)
-				echo "Error: invalid option: -$OPTARG" >&2
+				log_error "invalid option: -$OPTARG"
 				exit 1
 				;;
 			:)
-				echo "Error: option -$OPTARG requires an argument." >&2
+				log_error "option -$OPTARG requires an argument."
 				exit 1
 				;;
 		esac
