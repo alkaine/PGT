@@ -4,7 +4,6 @@ CURRENT_DIRECTORY=${PWD}
 CURRENT_DIRECTORY_NAME=${PWD##*/}
 PGT_DIRECTORY=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
-PGT_DIRECTORY="hehe"
 
 if [[ !(-d $PGT_DIRECTORY) ]]; then
 	echo "\\033[0;31m""Error: folder $PGT_DIRECTORY doesn't exist""\\033[0;37m"

@@ -7,7 +7,7 @@ function compil
 	cd android
 
 	# bug sdk-16
-	ant clean
+	# ant clean
 
 	ant debug
 	cd ..
