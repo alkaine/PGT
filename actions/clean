@@ -1,0 +1,6 @@
+#! /bin/sh
+
+function clean
+{
+	ant clean
+}

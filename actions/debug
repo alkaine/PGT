@@ -1,0 +1,9 @@
+#! /bin/sh
+
+function debug
+{
+	run_action "build"
+	run_action "compil"
+	run_action "deploy"
+	run_action "run"
+}

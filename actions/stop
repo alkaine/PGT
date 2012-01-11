@@ -1,0 +1,14 @@
+#! /bin/sh
+
+function stop
+{
+	log_action_separator "STOP"
+
+	check_folder_android
+	get_config
+	get_target
+
+	# TODO: find a way to stop or kill the pid
+
+	adb $targetoption install -r android/bin/$ACTIVITY-debug.apk
+}

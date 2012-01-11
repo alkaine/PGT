@@ -1,9 +1,39 @@
 #! /bin/sh
 
+# todo:
+# 	update to use:
+# 		pgt create
+# 		pgt build
+# 		pgt compil
+# 		pgt run
+# 		pgt deploy
+# 		pgt debug => all
+
+# 		options
+# 			pgt build --path "my_project"
+# 			pgt run --target "my_target"
+# 			pgt run --log "debug"
+
+# 	stop when build crash
+
+# 	add
+# 		pgt start
+# 		pgt start --activity "my_activity"
+# 		pgt start --activity "my_activity" --nolog
+
+# 		pgt stop
+# 		pgt stop --activity "my_activity" --package
+
+# 		pgt clean
+# 			ant clean
+
+# ona pour chaque action des options mais pour debug, on a toutes les actions
+# donc la first string est laction
+# on doit recuperer la liste des options
+
 CURRENT_DIRECTORY=${PWD}
 CURRENT_DIRECTORY_NAME=${PWD##*/}
 PGT_DIRECTORY=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
-
 
 if [[ !(-d $PGT_DIRECTORY) ]]; then
 	echo "\\033[0;31m""Error: folder $PGT_DIRECTORY doesn't exist""\\033[0;37m"
@@ -147,33 +177,69 @@ function check_folder_android
 	fi
 }
 
+function run_action
+{
+	. $PGT_DIRECTORY/actions/$1
+	$1
+}
+
 # level to high
 if [ ${PWD##*/} = "android" ]; then
 	echo "Going to parent directory"
 	cd ..
 fi
 
-. $PGT_DIRECTORY/options/user_options
-get_options "$@"
+# available options
+# -path
+# -target
+# -help
+# -log
+# -nolog
 
-if [ "$create" = "on" ]; then
-	. $PGT_DIRECTORY/actions/create
-	create
-fi
+HELP=false
+TARGET=""
+LOG="debug"
 
-if [ "$build" = "on" ]; then
-	. $PGT_DIRECTORY/actions/build
-	build
-	. $PGT_DIRECTORY/actions/compil
-	compil
-fi
+# A string with command options
+options=$@
 
-if [ "$deploy" = "on" ]; then
-	. $PGT_DIRECTORY/actions/deploy
-	deploy
-fi
+# An array with all the arguments
+arguments=($options)
 
-if [ "$run" = "on" ]; then
-	. $PGT_DIRECTORY/actions/run
-	run
-fi
+# Loop index
+index=0
+
+for argument in $options
+	do
+		# Incrementing index
+		index=`expr $index + 1`
+
+		# The conditions
+		case $argument in
+			-help|--help|-h) HELP=true ;;
+			# project path for external calls
+			-path)
+				PROJECT_PATH=${arguments[index]}
+				if [[ !(-d $PROJECT_PATH) ]]; then
+					log_error "project path $PROJECT_PATH doesn't exist"
+					exit
+				fi
+				echo cd $PROJECT_PATH
+				cd $PROJECT_PATH
+			;;
+			-target) TARGET=${arguments[index]} ;;
+			-logpgt) LOG=${arguments[index]} ;;
+			-nolog) LOG=false ;;
+		esac
+done
+
+# switch option
+case $1 in
+	create|build|compil|deploy|run|debug|start|stop|uninstall|clean)
+		run_action $1
+		exit
+		;;
+esac
+
+log_error "invalid action: $1"
+exit 1

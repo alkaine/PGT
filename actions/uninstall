@@ -1,0 +1,18 @@
+#! /bin/sh
+
+function uninstall
+{
+	log_action_separator "UNINSTALL"
+
+	check_folder_android
+	get_config
+	get_target
+
+	uninstall=$(adb uninstall $targetoption $PACKAGE)
+
+	if [[ "$(echo $uninstall | grep "Success" -c)" = "1" ]]; then
+		log_success "Application successfully uninstalled"
+	elif [[ "$(echo $uninstall | grep "Failure" -c)" = "1" ]]; then
+		log_error "Application couldn't be uninstalled"
+	fi
+}
