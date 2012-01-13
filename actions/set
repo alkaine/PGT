@@ -1,0 +1,10 @@
+#! /bin/sh
+
+function pgt_set
+{
+	log_action_separator "SET"
+
+	# just save the config file with the given options
+	. $PGT_DIRECTORY/actions/config
+	generate_config
+}

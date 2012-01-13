@@ -1,0 +1,155 @@
+#! /bin/sh
+
+function pgt_config
+{
+	log_action_separator "CONFIGURATION"
+
+	echo "# do you want to set the default target? (default value: \"$TARGET\") (set to \"no\" to keep the default value)"
+	read response
+
+	case $response in
+		no|No|n)
+			TARGET=$TARGET
+			;;
+		*)
+			TARGET=$response
+			;;
+	esac
+
+	echo "# do you want to set the default log? (default value: \"$LOG\") (set to \"no\" to keep the default value, false to disable it)"
+	read response
+
+	case $response in
+		no|No|n)
+			LOG=$LOG
+			;;
+		*)
+			LOG=$response
+			;;
+	esac
+
+	echo "# do you want to set the default activity? (default value: \"$ACTIVITY\") (set to \"no\" to keep the default value)"
+	read response
+
+	case $response in
+		no|No|n)
+			ACTIVITY=$ACTIVITY
+			;;
+		*)
+			ACTIVITY=$response
+			;;
+	esac
+
+	PACKAGE=com.$(echo $ACTIVITY | tr '[A-Z]' '[a-z]')
+	echo "# do you want to set the default package? (default value: \"$PACKAGE\") (set to \"no\" to keep the default value)"
+	read response
+
+	case $response in
+		no|No|n)
+			PACKAGE=$PACKAGE
+			;;
+		*)
+			PACKAGE=$response
+			;;
+	esac
+
+	APK="bin/$ACTIVITY-debug.apk"
+	echo "# do you want to set the default apk? (default value: \"$APK\") (set to \"no\" to keep the default value)"
+	read response
+
+	case $response in
+		no|No|n)
+			APK=$APK
+			;;
+		*)
+			APK=$response
+			;;
+	esac
+
+	echo "# is it a Phonegap project? (default value: \"$PHONEGAP\") (set to \"no\" to keep the default value)"
+	read response
+
+	case $response in
+		no|No|n)
+			PHONEGAP=$PHONEGAP
+			;;
+		*)
+			PHONEGAP=$response
+			;;
+	esac
+
+	if ${PHONEGAP:=true} ; then
+		echo "# what's the project phonegap version? (default value: \"$PHONEGAP_VERSION\") (set to \"no\" to keep the default value)"
+		read response
+
+		case $response in
+			no|No|n)
+				PHONEGAP_VERSION=$PHONEGAP_VERSION
+				;;
+			*)
+				PHONEGAP_VERSION=$response
+				;;
+		esac
+
+		echo "# do you need a custom builder? (default value: \"$BUILDER\") (set to \"no\" to keep the default value) (otherwise set the path to the builder)"
+		read response
+
+		case $response in
+			no|No|n)
+				BUILDER=$BUILDER
+				;;
+			*)
+				BUILDER=$response
+				;;
+		esac
+
+		echo "# what's the folder of the assets/www source directory? (default value: \"$WWW_FOLDER\") (set to \"no\" to keep the default value) (otherwise set the path to the folder)"
+		read response
+
+		case $response in
+			no|No|n)
+				WWW_FOLDER=$WWW_FOLDER
+				;;
+			*)
+				WWW_FOLDER=$response
+				;;
+		esac
+	else
+		PHONEGAP_VERSION=""
+		BUILDER=false
+	fi
+
+	generate_config
+}
+
+function generate_config
+{
+	if [[ !(-d ".pgt") ]]; then
+		mkdir .pgt
+	fi
+
+	existed=false
+
+	if [ -f $CONFIG_FILE ]; then
+		rm $CONFIG_FILE
+		existed=true
+	fi
+
+	echo "TARGET=$TARGET" >> $CONFIG_FILE
+	echo "LOG=$LOG" >> $CONFIG_FILE
+	echo "ACTIVITY=$ACTIVITY" >> $CONFIG_FILE
+	echo "PACKAGE=$PACKAGE" >> $CONFIG_FILE
+	echo "APK=$APK" >> $CONFIG_FILE
+	echo "# specific phonegap config" >> $CONFIG_FILE
+	echo "PHONEGAP=$PHONEGAP" >> $CONFIG_FILE
+	echo "PHONEGAP_VERSION=$PHONEGAP_VERSION" >> $CONFIG_FILE
+	echo "BUILDER=$BUILDER" >> $CONFIG_FILE
+	echo "WWW_FOLDER=$WWW_FOLDER" >> $CONFIG_FILE
+
+	if ${PHONEGAP:=true} ; then
+		log_success "pgt config file updated"
+	else
+		log_success "pgt config file created"
+	fi
+
+}

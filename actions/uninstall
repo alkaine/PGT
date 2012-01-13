@@ -1,11 +1,9 @@
 #! /bin/sh
 
-function uninstall
+function pgt_uninstall
 {
 	log_action_separator "UNINSTALL"
 
-	check_folder_android
-	get_config
 	get_target
 
 	uninstall=$(adb uninstall $targetoption $PACKAGE)

@@ -1,18 +1,15 @@
 #! /bin/sh
 
-function run
+function pgt_run
 {
 	log_action_separator "RUN"
 
-	check_folder_android
-	get_config
 	get_target
 
 	echo "Starting $PACKAGE/$PACKAGE.$ACTIVITY..."
 
 	# TODO check if the activity exists
 
-	echo "adb $targetoption shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY"
 	start=$(adb $targetoption shell am start -n $PACKAGE/$PACKAGE.$ACTIVITY)
 
 	if [[ "$(echo $start | grep "Warning:\ Activity\ not\ started" -c)" = "1" ]]; then
@@ -33,6 +30,8 @@ function run
 
 	# activate the logs
 	if [ $LOG != "false" ]; then
+
+		log_action_separator "LOG"
 
 		echo "Logging $PACKAGE/$PACKAGE.$ACTIVITY..."
 

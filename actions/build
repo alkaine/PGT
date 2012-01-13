@@ -1,39 +1,47 @@
 #! /bin/sh
 
-function build
+function pgt_build
 {
-	log_action_separator "BUILD"
+	if ${PHONEGAP:=true} ; then
 
-	# folder android
-	check_folder_android
+		log_action_separator "BUILD"
 
-	get_config
+		# got a builder?
+		if [ ! $BUILDER = false ]; then
+			log_separator
 
-	# got a builder?
-	if test "${BUILDER+defined}" && [ ${BUILDER} != "no" ]; then
-		log_separator
-		echo "Launching the custom builder..."
-		# check file permission
-		if [[ !(-x $BUILDER) ]]; then
-			# can't execute the builder
-			echo "Adding the necessary rights to the builder"
-			chmod u+x $BUILDER
+			if [ ! -f "$BUILDER" ]; then
+				log_error "The custom builder does not exist"
+				echo "Use pgt set builder to change the path"
+				exit
+			fi
+
+			echo "Launching the custom builder..."
+
+			# check file permission
+			if [ ! -x $BUILDER ]; then
+				# can't execute the builder
+				log_info "Adding the necessary rights to the builder"
+				chmod u+x $BUILDER
+			fi
+
+			./$BUILDER
+			log_separator
 		fi
-		./$BUILDER
+
+		echo "Cleaning assets/www"
+		# delete wwww
+		rm -rf assets/www/
+		# create www
+		mkdir assets/www/
+
+		if [ ! $WWW_FOLDER = false ]; then
+			echo "Updating assets/www"
+			# copy all files in assets/www
+			cp -r $WWW_FOLDER/* assets/www/
+		fi
+
+	else
+		log_info "Not a phonegap project, don't need to build"
 	fi
-
-	log_separator
-
-	echo "Cleaning android/assets/www"
-	# delete wwww
-	rm -rf android/assets/www/
-	# create www
-	mkdir android/assets/www/
-
-	echo "Updating android/assets/www"
-	# copy all files in android/assets/www
-	cp -r $WWW_DIR/* android/assets/www/
-
-	# adding the .gitignore in the assets folder
-	echo .gitignore > android/assets/www/.gitignore
 }

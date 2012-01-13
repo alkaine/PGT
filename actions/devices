@@ -1,0 +1,36 @@
+#! /bin/sh
+
+function pgt_devices
+{
+	# switch action
+	case $2 in
+		list|restart|start|stop)
+			pgt_devices_$2
+			exit
+			;;
+		*)
+			pgt_devices_list
+			;;
+	esac
+}
+
+function pgt_devices_list
+{
+	adb devices
+}
+
+function pgt_devices_restart
+{
+	pgt_devices_stop
+	pgt_devices_start
+}
+
+function pgt_devices_stop
+{
+	adb kill-server
+}
+
+function pgt_devices_start
+{
+	adb start-server
+}

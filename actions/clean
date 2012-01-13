@@ -1,6 +1,6 @@
 #! /bin/sh
 
-function clean
+function pgt_clean
 {
 	ant clean
 }

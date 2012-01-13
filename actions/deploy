@@ -1,14 +1,11 @@
 #! /bin/sh
 
-function deploy
+function pgt_deploy
 {
 	log_action_separator "DEPLOY"
 
-	check_folder_android
-
-	get_config
 	get_target
 
-	echo "Installing on $target..."
-	adb $targetoption install -r android/bin/$ACTIVITY-debug.apk
+	echo "Installing on $targetoption..."
+	adb $targetoption install -r $APK
 }

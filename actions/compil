@@ -1,14 +1,11 @@
 #! /bin/sh
 
-function compil
+function pgt_compil
 {
 	log_action_separator "COMPILATION"
-
-	cd android
 
 	# bug sdk-16
 	# ant clean
 
 	ant debug
-	cd ..
 }

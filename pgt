@@ -1,36 +1,5 @@
 #! /bin/sh
 
-# todo:
-# 	update to use:
-# 		pgt create
-# 		pgt build
-# 		pgt compil
-# 		pgt run
-# 		pgt deploy
-# 		pgt debug => all
-
-# 		options
-# 			pgt build --path "my_project"
-# 			pgt run --target "my_target"
-# 			pgt run --log "debug"
-
-# 	stop when build crash
-
-# 	add
-# 		pgt start
-# 		pgt start --activity "my_activity"
-# 		pgt start --activity "my_activity" --nolog
-
-# 		pgt stop
-# 		pgt stop --activity "my_activity" --package
-
-# 		pgt clean
-# 			ant clean
-
-# ona pour chaque action des options mais pour debug, on a toutes les actions
-# donc la first string est laction
-# on doit recuperer la liste des options
-
 CURRENT_DIRECTORY=${PWD}
 CURRENT_DIRECTORY_NAME=${PWD##*/}
 PGT_DIRECTORY=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
@@ -128,77 +97,60 @@ function get_target
 	# check devices
 
 	# build on specific target
-	if [[ !("$target" = "") && !("$target" = "device") && !("$target" = "emulator") ]]; then
-		targetoption="-s $target"
+	if [[ !("$TARGET" = "") && !("$TARGET" = "device") && !("$TARGET" = "emulator") ]]; then
+		targetoption="-s $TARGET"
 
 	# build on usb device
-	elif [[ ("$target" = "device") ]]; then
+	elif [[ ("$TARGET" = "device") ]]; then
 		targetoption="-d"
 
 	# build on emulator
-	elif [[ ("$target" = "emulator") ]]; then
+	elif [[ ("$TARGET" = "emulator") ]]; then
 		targetoption="-e"
 
 	# build on something
 	else
 		get_first_online_device
 
-		if [[ $target = "" ]]; then
+		if [[ $TARGET = "" ]]; then
 			echo "Error: no online device found"
 			exit
 		fi
 
-		targetoption="-s $target"
+		targetoption="-s $TARGET"
 	fi
 }
 
-function get_config
+function check_pgt_config
 {
-	if [ "$ACTIVITY" = "" ]; then
-		cd android/
-		echo "Getting phonegap config file..."
-		# get phonegap config file
-		. ./.phonegap/config
-		# get pgt config file
-		echo "Getting PGT config file..."
-		. ./.pgt/config
-		cd ..
+	if [ ! -f "$CONFIG_FILE" ]; then
+		# config file doesn't exist
+		log_error "the pgt config file does not exist, please use pgt config to create it."
+		exit
 	fi
-}
 
-function check_folder_android
-{
-	if [[ !(-d android/) ]]; then
-		echo "Error: folder android doesn't exist"
-		exit
-	elif [[ (-z $(ls android/)) ]]; then
-		echo "Error: folder android is empty"
-		exit
-	fi
+	. $CONFIG_FILE
 }
 
 function run_action
 {
 	. $PGT_DIRECTORY/actions/$1
-	$1
+	pgt_$1 $@
 }
-
-# level to high
-if [ ${PWD##*/} = "android" ]; then
-	echo "Going to parent directory"
-	cd ..
-fi
 
 # available options
 # -path
 # -target
 # -help
 # -log
-# -nolog
-
-HELP=false
-TARGET=""
-LOG="debug"
+# -no-log
+# -no-phonegap
+# -activity
+# -package
+# -apk
+# -phonegap-version
+# -builder
+# -www-folder
 
 # A string with command options
 options=$@
@@ -216,7 +168,10 @@ for argument in $options
 
 		# The conditions
 		case $argument in
-			-help|--help|-h) HELP=true ;;
+			-help|--help|-h)
+				# start the help but can be a request to a specific action
+				exit
+			;;
 			# project path for external calls
 			-path)
 				PROJECT_PATH=${arguments[index]}
@@ -228,15 +183,32 @@ for argument in $options
 				cd $PROJECT_PATH
 			;;
 			-target) TARGET=${arguments[index]} ;;
-			-logpgt) LOG=${arguments[index]} ;;
-			-nolog) LOG=false ;;
+			-log) LOG=${arguments[index]} ;;
+			-no-log) LOG=false ;;
+			-no-phonegap)
+				PHONEGAP=false
+				APP_FOLDER="."
+			;;
+			-activity) ACTIVITY=${arguments[index]} ;;
+			-package) PACKAGE=${arguments[index]} ;;
+			-apk) APK=${arguments[index]} ;;
+			-phonegap-version) PHONEGAP_VERSION=${arguments[index]} ;;
+			-builder) BUILDER=${arguments[index]} ;;
+			-www-folder) WWW_DIR=${arguments[index]} ;;
 		esac
 done
 
-# switch option
+# actions which need config
 case $1 in
-	create|build|compil|deploy|run|debug|start|stop|uninstall|clean)
-		run_action $1
+	build|compil|deploy|run|debug|start|stop|uninstall|clean)
+		check_pgt_config
+		;;
+esac
+
+# switch action
+case $1 in
+	config|set|create|build|compil|deploy|run|debug|start|stop|uninstall|clean|devices)
+		run_action $@
 		exit
 		;;
 esac

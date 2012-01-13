@@ -1,93 +1,54 @@
 #! /bin/sh
 
-function create
+function pgt_create
 {
 	log_action_separator "CREATE"
 
 	# folder doesn't exist
-	if [[ !(-d android/) ]]; then
+	if [ ! -d android/ ]; then
 		echo "creating android folder..."
 		mkdir android
+		cd android
 	# if folder not empty, trow error
-	elif [[ !(-z $(ls android/)) ]]; then
+	elif [ ! -z $(ls android/) ]; then
 		log_error "Folder android must be empty"
 		exit
 	fi
 
-	echo "Creating PGT folder"
-	mkdir android/.pgt
-	cd android/.pgt
-
-	echo "Creating PGT config file"
-
-	set_builder
-	set_webapp_path
-	set_phonegap_final_path
-
-	cd -
-
 	cd $CALLBACK_ANDROID_PATH
-	ACTIVITY_NAME=$CURRENT_DIRECTORY_NAME
-	PACKAGE_NAME=com.phonegap.$(echo $ACTIVITY_NAME | tr '[A-Z]' '[a-z]')
-	./bin/create $CURRENT_DIRECTORY/android $PACKAGE_NAME $ACTIVITY_NAME
+	./bin/create $CURRENT_DIRECTORY/android $PACKAGE $ACTIVITY
 
+	# come back to android
 	cd -
 
 	echo "Deleting phonegap folder"
-	rm -rf android/phonegap
+	rm -rf phonegap
 
 	echo "Deleting readme.md"
-	rm android/.phonegap/readme.md
-	rm android/.phonegap/android/readme.md
-
-	get_config
+	rm .phonegap/readme.md
+	rm .phonegap/android/readme.md
 
 	echo "Moving phonegap files"
-	mv android/.phonegap/android/phonegap-$VERSION.js android/.phonegap/phonegap-$VERSION.js
-	mv android/.phonegap/android/phonegap-$VERSION.jar android/.phonegap/phonegap-$VERSION.jar
+	mv .phonegap/android/phonegap-$PHONEGAP_VERSION.js .phonegap/phonegap-$PHONEGAP_VERSION.js
+	mv .phonegap/android/phonegap-$PHONEGAP_VERSION.jar .phonegap/phonegap-$PHONEGAP_VERSION.jar
 
-	echo "Deleting android/.phonegap/android/"
-	rm -rf android/.phonegap/android/
+	echo "Deleting .phonegap/android/"
+	rm -rf .phonegap/android/
 
-	echo "Cleaning android/www/assets/"
-	rm -rf android/www/assets/
-	mkdir android/www/assets/
-
-	# adding the gitignore to keep folders
-	echo .gitignore > android/bin/.gitignore
-	mkdir android/gen
-	echo .gitignore > android/gen/.gitignore
-	echo .gitignore > android/assets/www/.gitignore
+	echo "Cleaning www/assets/"
+	rm -rf assets/
+	mkdir assets/
+	mkdir assets/www/
 
 	# adding a git ignore to ignore directories
-	echo .gitignore > android/.gitignore
-	echo assets/www/* >> android/.gitignore
-	echo build/* >> android/.gitignore
-	echo gen/* >> android/.gitignore
+	echo .gitignore > .gitignore
+	echo assets/www/* >> .gitignore
+	echo build/* >> .gitignore
+	echo gen/* >> .gitignore
 
-	echo "Android phonegap application created"
-}
+	# create the config file automatically
+	. $PGT_DIRECTORY/actions/config
+	generate_config
 
-function set_builder
-{
-	echo "# # custom builder script before compilation (set to \"no\" to disable)" >> config
-	. $PGT_DIRECTORY/options/builder
-	create_custom_builder
-	echo "BUILDER=$builder" >> config
-}
-
-function set_webapp_path
-{
-	echo "# directory of the webapp relative to the app root" >> config
-	echo "Specify the path to the web app root relative to the app root"
-	read webapp_root
-	echo "WWW_DIR=$webapp_root" >> config
-}
-
-function set_phonegap_final_path
-{
-	echo "# final phonegap library path in the android app assets" >> config
-	echo "Specify the final path where phonegap should be (relative to the android/assets/www/ directory)"
-	read phonegap_path
-	echo "PHONEGAP_PATH=$phonegap_path" >> config
+	log_success "Android phonegap application created"
 }

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-function debug
+function pgt_debug
 {
 	run_action "build"
 	run_action "compil"
