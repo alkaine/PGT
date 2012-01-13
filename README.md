@@ -23,9 +23,9 @@ Change the <code>CALLBACK_ANDROID_PATH</code> in the config file
 * -activity : specify the application main activity (default: name of the parent folder)
 * -package : specify the application package (default: com.activity_tolowercase | com.phonegap.activity_tolowercase if it's a phonegapproject)
 * -apk : specify the application file apk generated
-# -phonegap-version : specify the phonegap version (default: 1.3.0)
-# -builder : specify the custom builder (default: false)
-# -www-folder : specify the folder used for the assets (default: false)
+* -phonegap-version : specify the phonegap version (default: 1.3.0)
+* -builder : specify the custom builder (default: false)
+* -www-folder : specify the folder used for the assets (default: false)
 
 # Examples #
 
