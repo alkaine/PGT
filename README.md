@@ -48,19 +48,19 @@ Change the <code>CALLBACK_ANDROID_PATH</code> in the config file
 ### Clean the application (delete all bin and gen files) ###
 <code>pgt clean</code>
 
-### Deploy application on the first connected device ###
+### Deploy application ###
 <code>pgt deploy</code>
 
-### Run application on the first connected device ###
+### Run application ###
 <code>pgt run</code>
 
-### Build, compil, deploy and run on the first connected device ###
+### Build, compil, deploy and run ###
 <code>pgt debug</code>
 
-### Stop the activity on the first connected device ###
+### Stop the activity ###
 <code>pgt stop</code>
 
-### Uninstall on the first connected device ###
+### Uninstall ###
 <code>pgt uninstall</code>
 
 ### Listing available devices ###
