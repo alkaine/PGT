@@ -2,8 +2,8 @@
 
 function pgt_debug
 {
-	run_action "build"
-	run_action "compil"
-	run_action "deploy"
-	run_action "run"
+	COMPIL_MODE="debug"
+	APK="bin/$PREFIX-$COMPIL_MODE.apk"
+
+	run_action "use_build"
 }

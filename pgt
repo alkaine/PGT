@@ -200,14 +200,14 @@ done
 
 # actions which need config
 case $1 in
-	build|compil|deploy|run|debug|start|stop|uninstall|clean)
+	build|compil|deploy|run|debug|release|use_build|start|stop|uninstall|clean)
 		check_pgt_config
 		;;
 esac
 
 # switch action
 case $1 in
-	config|set|create|build|compil|deploy|run|debug|start|stop|uninstall|clean|devices)
+	config|set|create|build|compil|deploy|run|debug|release|use_build|start|stop|uninstall|clean|devices)
 		run_action $@
 		exit
 		;;

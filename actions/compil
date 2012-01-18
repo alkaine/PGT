@@ -1,5 +1,6 @@
 #! /bin/sh
 
+# parameteres: COMPIL_MODE debug release 
 function pgt_compil
 {
 	log_action_separator "COMPILATION"
@@ -7,5 +8,6 @@ function pgt_compil
 	# bug sdk-16
 	# ant clean
 
-	ant debug
+	echo "Compilation mode: $COMPIL_MODE" 
+	ant $COMPIL_MODE
 }

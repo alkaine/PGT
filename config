@@ -1,14 +1,19 @@
 #! /bin/sh
 
-CALLBACK_ANDROID_PATH="/usr/local/callbackandroid/"
+#CALLBACK_ANDROID_PATH="/usr/local/callbackandroid/"
+CALLBACK_ANDROID_PATH="/Users/alkaine/Tools/callback-android"
 CONFIG_FILE=".pgt/config"
 
 # default values
+COMPIL_MODE="debug" 	#can be: "debug" or "release"
 TARGET="device"
 LOG="debug"
 ACTIVITY=$CURRENT_DIRECTORY_NAME
+PREFIX=$ACTIVITY
 PACKAGE=com.phonegap.$(echo $ACTIVITY | tr '[A-Z]' '[a-z]')
-APK="bin/$ACTIVITY-debug.apk"
+#APK="bin/$ACTIVITY-debug.apk"
+#APK="bin/$ACTIVITY-$COMPIL_MODE.apk"
+APK="bin/$PREFIX-$COMPIL_MODE.apk"
 
 # specific phonegap config
 PHONEGAP=true
