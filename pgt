@@ -1,5 +1,10 @@
 #! /bin/sh
 
+# TODO:
+# add emulator handling
+# add check build files needed
+# add failed build check
+
 CURRENT_DIRECTORY=${PWD}
 CURRENT_DIRECTORY_NAME=${PWD##*/}
 PGT_DIRECTORY=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
